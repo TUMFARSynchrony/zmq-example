@@ -1,4 +1,4 @@
-# ZeroMQ by Jonas Goos
+# ZeroMQ by Jonas Goos & Julian Geheeb
 Because OpenFace is a C++ library and we use Python as a backend we need to find a way to communicate between them. There is a library called ZeroMQ which can do that. It also supports a bunch of other languages. 
 
 The original example where a python server sends images to OpenFace and OpenFace sends back the extracted action units can be found here: https://github.com/BorderBoy/zmq-example/.
