@@ -135,10 +135,12 @@ int main(int argc, char **argv)
 	// ZMQ preparation
 	zmq::context_t ctx;
     zmq::socket_t sock(ctx, ZMQ_REP);
-    sock.connect("tcp://localhost:5555");
+    std::string port{argc > 1 ? arguments[1] : "5555"};
+    std::cout << "Opening socket on port " + port << std::endl;
+    sock.connect("tcp://localhost:" + port);
 
 	while(true){
-		// wait for image
+        // wait for image
 		std::cout << "Waiting for image..." << std::endl;
 		zmq::message_t request;
 		sock.recv (request, zmq::recv_flags::none);
@@ -147,15 +149,21 @@ int main(int argc, char **argv)
 
 		// decode image
 		std::string dec_jpg =  base64_decode(rpl);
+        // std::vector<byte> byte_data(dec_jpg.begin(), dec_jpg.end());
 		std::vector<uchar> data(dec_jpg.begin(), dec_jpg.end());
+        //cv::Mat rgb_image = cv::Mat(data);
+        //std::cout << rgb_im << std::endl;
+        //rgb_image = rgb_image.reshape(3, 400);
+        //std::cout << rgb_im << std::endl;
 		cv::Mat rgb_image = cv::imdecode(cv::Mat(data), 1);
+        //std::cout << rgb_image << std::endl;
 		cv::Mat greyScale_image;
 		cv::cvtColor(rgb_image, greyScale_image, cv::COLOR_BGR2GRAY);
 		std::cout << "Image received" << std::endl;
 
 		// cv::imshow("some", rgb_image);
 		// cv::waitKey();
-		
+
 
 		// results will be stored in face_model
 		LandmarkDetector::DetectLandmarksInImage(rgb_image, face_model, det_parameters, greyScale_image);
@@ -175,16 +183,20 @@ int main(int argc, char **argv)
 
 		std::cout << "Reply sent" << std::endl;
 
-		//Show image
-		// for(int j = 0; j < face_model.detected_landmarks.rows / 2; j++){
-		// 	float x = face_model.detected_landmarks[j][0];
-		// 	float y = face_model.detected_landmarks[j + face_model.detected_landmarks.rows / 2][0];
-		// 	// std::cout << "(" << x << "," << y << ")" << std::endl;
-		// 	cv::circle(rgb_image, cv::Point2f(x,y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
-		// }
 
-		// cv::imshow("some", rgb_image);
-		// cv::waitKey();
+
+		// Show image
+        /*
+        for(int j = 0; j < face_model.detected_landmarks.rows / 2; j++){
+            float x = face_model.detected_landmarks[j][0];
+            float y = face_model.detected_landmarks[j + face_model.detected_landmarks.rows / 2][0];
+            // std::cout << "(" << x << "," << y << ")" << std::endl;
+            cv::circle(rgb_image, cv::Point2f(x,y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
+        }
+
+        cv::imshow("some", rgb_image);
+        cv::waitKey();
+        */
 	}
 
 	return 0;
